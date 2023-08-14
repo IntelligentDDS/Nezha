@@ -1,0 +1,11 @@
+drain3==0.9.10
+matplotlib==3.3.4
+more_itertools==8.12.0
+numpy==1.15.4
+Orange3_Associate==1.1.9
+pandas==0.23.4
+pip==9.0.1
+psutil==5.9.0
+pyfpgrowth==1.0
+PyYAML==6.0
+spmf==1.4

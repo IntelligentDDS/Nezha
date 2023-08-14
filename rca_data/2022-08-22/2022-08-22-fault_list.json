@@ -1,0 +1,156 @@
+{
+    "03": [
+        {
+            "inject_time": "2022-08-22 03:53:10",
+            "inject_timestamp": "1661140434",
+            "inject_pod": "frontend-579b9bff58-t2dbm",
+            "inject_type": "cpu_contention"
+        }
+    ],
+    "04": [
+        {
+            "inject_time": "2022-08-22 04:02:07",
+            "inject_timestamp": "1661140927",
+            "inject_pod": "frontend-579b9bff58-t2dbm",
+            "inject_type": "return"
+        },
+        {
+            "inject_time": "2022-08-22 04:10:20",
+            "inject_timestamp": "1661141420",
+            "inject_pod": "frontend-579b9bff58-t2dbm",
+            "inject_type": "cpu_consumed"
+        },
+        {
+            "inject_time": "2022-08-22 04:18:35",
+            "inject_timestamp": "1661141915",
+            "inject_pod": "frontend-579b9bff58-t2dbm",
+            "inject_type": "exception"
+        },
+        {
+            "inject_time": "2022-08-22 04:27:03",
+            "inject_timestamp": "1661142423",
+            "inject_pod": "cartservice-579f59597d-wc2lz",
+            "inject_type": "network_delay"
+        },
+        {
+            "inject_time": "2022-08-22 04:36:03",
+            "inject_timestamp": "1661142963",
+            "inject_pod": "cartservice-579f59597d-wc2lz",
+            "inject_type": "cpu_contention"
+        },
+        {
+            "inject_time": "2022-08-22 04:44:16",
+            "inject_timestamp": "1661143456",
+            "inject_pod": "checkoutservice-578fcf4766-9csqn",
+            "inject_type": "cpu_contention"
+        },
+        {
+            "inject_time": "2022-08-22 04:52:55",
+            "inject_timestamp": "1661143975",
+            "inject_pod": "checkoutservice-578fcf4766-9csqn",
+            "inject_type": "network_delay"
+        }
+    ],
+    "05": [
+        {
+            "inject_time": "2022-08-22 05:01:13",
+            "inject_timestamp": "1661144473",
+            "inject_pod": "checkoutservice-578fcf4766-9csqn",
+            "inject_type": "exception"
+        },
+        {
+            "inject_time": "2022-08-22 05:09:50",
+            "inject_timestamp": "1661144990",
+            "inject_pod": "checkoutservice-578fcf4766-9csqn",
+            "inject_type": "return"
+        },
+        {
+            "inject_time": "2022-08-22 05:18:09",
+            "inject_timestamp": "1661145489",
+            "inject_pod": "currencyservice-cf787dd48-vpjrd",
+            "inject_type": "cpu_contention"
+        },
+        {
+            "inject_time": "2022-08-22 05:27:06",
+            "inject_timestamp": "1661146026",
+            "inject_pod": "currencyservice-cf787dd48-vpjrd",
+            "inject_type": "network_delay"
+        },
+        {
+            "inject_time": "2022-08-22 05:35:34",
+            "inject_timestamp": "1661146534",
+            "inject_pod": "emailservice-55fdc5b988-f6xth",
+            "inject_type": "cpu_contention"
+        },
+        {
+            "inject_time": "2022-08-22 05:43:48",
+            "inject_timestamp": "1661147028",
+            "inject_pod": "emailservice-55fdc5b988-f6xth",
+            "inject_type": "network_delay"
+        },
+        {
+            "inject_time": "2022-08-22 05:52:54",
+            "inject_timestamp": "1661147574",
+            "inject_pod": "paymentservice-9cdb6588f-554sm",
+            "inject_type": "network_delay"
+        }
+    ],
+    "06": [
+        {
+            "inject_time": "2022-08-22 06:01:18",
+            "inject_timestamp": "1661148078",
+            "inject_pod": "paymentservice-9cdb6588f-554sm",
+            "inject_type": "cpu_contention"
+        },
+        {
+            "inject_time": "2022-08-22 06:35:39",
+            "inject_timestamp": "1661150139",
+            "inject_pod": "productcatalogservice-668d5f85fb-wckp8",
+            "inject_type": "cpu_consumed"
+        },
+        {
+            "inject_time": "2022-08-22 06:52:56",
+            "inject_timestamp": "1661151176",
+            "inject_pod": "recommendationservice-6cfdd55578-gfj6q",
+            "inject_type": "network_delay"
+        }
+    ],
+    "07": [
+        {
+            "inject_time": "2022-08-22 07:01:25",
+            "inject_timestamp": "1661151685",
+            "inject_pod": "recommendationservice-6cfdd55578-gfj6q",
+            "inject_type": "cpu_contention"
+        },
+        {
+            "inject_time": "2022-08-22 07:10:43",
+            "inject_timestamp": "1661152183",
+            "inject_pod": "recommendationservice-6cfdd55578-gfj6q",
+            "inject_type": "cpu_consumed"
+        },
+        {
+            "inject_time": "2022-08-22 07:17:55",
+            "inject_timestamp": "1661152675",
+            "inject_pod": "shippingservice-7b598fc7d-lmggd",
+            "inject_type": "network_delay"
+        },
+        {
+            "inject_time": "2022-08-22 07:26:48",
+            "inject_timestamp": "1661153208",
+            "inject_pod": "shippingservice-7b598fc7d-lmggd",
+            "inject_type": "cpu_contention"
+        },
+        {
+            "inject_time": "2022-08-22 07:44:20",
+            "inject_timestamp": "1661154260",
+            "inject_pod": "adservice-5f6585d649-fnmft",
+            "inject_type": "return"
+        },
+        {
+            "inject_time": "2022-08-22 07:53:33",
+            "inject_timestamp": "1661154813",
+            "inject_pod": "adservice-5f6585d649-fnmft",
+            "inject_type": "exception"
+        }
+    ]
+}

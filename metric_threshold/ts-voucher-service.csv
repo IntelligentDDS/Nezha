@@ -1,0 +1,3 @@
+CpuUsageRate(%),MemoryUsageRate(%),SyscallRead,SyscallWrite,NetworkP90(ms)
+0.0,0.8820312499999783,0.0,0.0,300
+0.0,2.1760371282653068e-14,0.0,0.0,0

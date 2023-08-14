@@ -1,0 +1,59 @@
+{
+    "ts-contacts-service": {
+        "return": "c.s.ContactsServiceImpl#31_c.s.ContactsServiceImpl#34",
+        "cpu_consumed": "CpuUsageRate(%)",
+        "cpu_contention": "CpuUsageRate(%)",
+        "network_delay": "NetworkP90(ms)"
+    },
+    "ts-basic-service": {
+        "return": "f.m.s.BasicServiceImpl#405_f.m.s.BasicServiceImpl#418",
+        "exception": "f.m.s.BasicServiceImpl#100_f.m.s.BasicServiceImpl#119",
+        "cpu_consumed": "CpuUsageRate(%)",
+        "cpu_contention": "CpuUsageRate(%)",
+        "network_delay": "NetworkP90(ms)"
+    },
+    "ts-food-service": {
+        "return": "f.s.FoodServiceImpl#240_f.s.FoodServiceImpl#243",
+        "cpu_contention": "CpuUsageRate(%)",
+        "network_delay": "NetworkP90(ms)"
+    },
+    "ts-verification-code-service": {
+        "return": "v.s.i.VerifyCodeServiceImpl#114_v.s.i.VerifyCodeServiceImpl#132",
+        "cpu_contention": "CpuUsageRate(%)",
+        "network_delay": "NetworkP90(ms)"
+    },
+    "ts-delivery-service": {
+        "return": "Delivery service_Receive delivery object",
+        "exception": "Receive delivery object_Save delivery object into database success",
+        "cpu_contention": "CpuUsageRate(%)",
+        "network_delay": "NetworkP90(ms)"
+    },
+    "ts-travel-service": {
+        "exception": "t.s.TravelServiceImpl#451_t.s.TravelServiceImpl#457",
+        "cpu_contention": "CpuUsageRate(%)",
+        "network_delay": "NetworkP90(ms)"
+    },
+    "ts-travel2-service": {
+        "exception": "t.s.TravelServiceImpl#366_t.s.TravelServiceImpl#372",
+        "cpu_contention": "CpuUsageRate(%)",
+        "network_delay": "NetworkP90(ms)"
+    },
+    "ts-preserve-service": {
+        "cpu_contention": "CpuUsageRate(%)",
+        "network_delay": "NetworkP90(ms)"
+    },
+    "ts-route-service": {
+        "exception": "RouteController.queryByIds start_r.c.RouteController#53",
+        "cpu_contention": "CpuUsageRate(%)",
+        "network_delay": "NetworkP90(ms)"
+    },
+    "ts-security-service": {
+        "cpu_contention": "CpuUsageRate(%)",
+        "network_delay": "NetworkP90(ms)"
+    },
+    "ts-price-service": {
+        "exception": "PriceController.query start_p.c.PriceController#46",
+        "cpu_contention": "CpuUsageRate(%)",
+        "network_delay": "NetworkP90(ms)"
+    }
+}

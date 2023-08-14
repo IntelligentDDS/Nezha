@@ -1,0 +1,56 @@
+{
+    "frontend": {
+        "return": "Serving product page started_GetProduct start",
+        "exception": "Placing order started_Order placed complete",
+        "cpu_consumed": "CpuUsageRate(%)",
+        "cpu_contention": "CpuUsageRate(%)"
+    },
+    "checkoutservice": {
+        "return": "Start charge card_Charge successfully",
+        "exception": "Start charge card_Charge successfully",
+        "network_delay": "NetworkP90(ms)",
+        "cpu_contention": "CpuUsageRate(%)",
+        "cpu_consumed": "CpuUsageRate(%)"
+    },
+    "cartservice": {
+        "cpu_contention": "CpuUsageRate(%)",
+        "network_delay": "NetworkP90(ms)"
+    },
+    "emailservice": {
+        "cpu_consumed": "CpuUsageRate(%)",
+        "cpu_contention": "CpuUsageRate(%)",
+        "network_delay": "NetworkP90(ms)"
+    },
+    "currencyservice": {
+        "cpu_contention": "CpuUsageRate(%)",
+        "network_delay": "NetworkP90(ms)"
+    },
+    "recommendationservice": {
+        "cpu_consumed": "CpuUsageRate(%)",
+        "cpu_contention": "CpuUsageRate(%)",
+        "network_delay": "NetworkP90(ms)"
+    },
+    "paymentservice": {
+        "network_delay": "NetworkP90(ms)",
+        "cpu_contention": "CpuUsageRate(%)"
+    },
+    "productcatalogservice": {
+        "network_delay": "NetworkP90(ms)",
+        "cpu_consumed": "CpuUsageRate(%)",
+        "cpu_contention": "CpuUsageRate(%)",
+        "return": "Query product with name_Query product successfully",
+        "exception": "Query product with name_Query product successfully"
+    },
+    "shippingservice": {
+        "cpu_consumed": "CpuUsageRate(%)",
+        "cpu_contention": "CpuUsageRate(%)",
+        "network_delay": "NetworkP90(ms)"
+    },
+    "adservice": {
+        "cpu_contention": "CpuUsageRate(%)",
+        "network_delay": "NetworkP90(ms)",
+        "return": "Received ad request_No context provided",
+        "exception": "Received ad request_No context provided",
+        "cpu_consumed": "CpuUsageRate(%)"
+    }
+}
