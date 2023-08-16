@@ -20,20 +20,13 @@ log_path = dirname(__file__) + '/log/' + str(datetime.datetime.now().strftime(
     '%Y-%m-%d')) + '_nezha.log'
 logger = Logger(log_path, logging.DEBUG, __name__).getlog()
 
-app = "hipster"  # "ts"
-
 template_indir = dirname(__file__) + '/log_template'
 config = TemplateMinerConfig()
-config.load(dirname(__file__) + "/log_template/drain3_" + app + ".ini")
-config.profiling_enabled = False
 
 
-path = dirname(__file__) + '/log_template/' + app + ".bin"
-persistence = FilePersistence(path)
-template_miner = TemplateMiner(persistence, config=config)
 
 
-def log_parsing(log, pod, logrca=False):
+def log_parsing(log, pod, log_template_miner,logrca=False):
     """
     func log_parsing
     parse log by drain3
@@ -56,7 +49,8 @@ def log_parsing(log, pod, logrca=False):
 
     if logrca:
         log_message = log_message + "_" + pod
-    result = template_miner.add_log_message(log_message)
+
+    result = log_template_miner.add_log_message(log_message)
 
     if result["change_type"] != "none":
         result_json = json.dumps(result)
@@ -66,7 +60,7 @@ def log_parsing(log, pod, logrca=False):
     return result['cluster_id']
 
 
-def from_id_to_template(id):
+def from_id_to_template(id,log_template_miner):
     """
     fun from_id_to_template: change template id to template content
     :parameter
@@ -78,7 +72,7 @@ def from_id_to_template(id):
     # sorted_clusters = sorted(template_miner.drain.clusters,
     #                          key=lambda it: it.cluster_id, reverse=False)
     # id = int(id)
-    for cluster in template_miner.drain.clusters:
+    for cluster in log_template_miner.drain.clusters:
         if cluster.cluster_id == id:
             # logger.info(cluster.get_template())
             return cluster.get_template()
@@ -164,15 +158,42 @@ def pod_to_service(log, pod):
 
 if __name__ == '__main__':
     # 指定文件夹的路径
-    
     for  i in range(0,4):
-        folder_path_list = ['./rca_data/2022-08-22/log','./rca_data/2022-08-23/log', './rca_data/2023-01-29/log', './rca_data/2023-01-30/log']
+        ns = "hipster"
+        config.load(dirname(__file__) + "/log_template/drain3_" + ns + ".ini")
+        config.profiling_enabled = False
+
+        path = dirname(__file__) + '/log_template/' + ns + ".bin"
+        persistence = FilePersistence(path)
+        template_miner = TemplateMiner(persistence, config=config)
+        folder_path_list = ['./rca_data/2022-08-22/log','./rca_data/2022-08-23/log']
 
         for folder_path in folder_path_list:    
             for root, dirs, files in os.walk(folder_path):
                 for file in files:
-                    log_file = os.path.join(root, file)           
+                    log_file = os.path.join(root, file) 
+                    print(log_file)          
                     log_reader = pd.read_csv(log_file, index_col=False, usecols=[
                         'PodName', 'TimeUnixNano', 'Log'])
                     for i in range(1, len(log_reader['Log'])):
-                        log_parsing(log=log_reader['Log'][i], pod=log_reader['PodName'][i])
+                        log_parsing(log=log_reader['Log'][i], pod=log_reader['PodName'][i], log_template_miner=template_miner)
+
+        # ns = "ts"
+        # config.load(dirname(__file__) + "/log_template/drain3_" + ns + ".ini")
+        # config.profiling_enabled = False
+
+        # path = dirname(__file__) + '/log_template/' + ns + ".bin"
+        # persistence = FilePersistence(path)
+        # template_miner = TemplateMiner(persistence, config=config)
+        # folder_path_list = ['./rca_data/2023-01-29/log', './rca_data/2023-01-30/log']
+
+        # for folder_path in folder_path_list:    
+        #     for root, dirs, files in os.walk(folder_path):
+        #         for file in files:
+        #             log_file = os.path.join(root, file) 
+        #             print(log_file)          
+        #             log_reader = pd.read_csv(log_file, index_col=False, usecols=[
+        #                 'PodName', 'TimeUnixNano', 'Log'])
+        #             for i in range(1, len(log_reader['Log'])):
+        #                 log_parsing(log=log_reader['Log'][i], pod=log_reader['PodName'][i], log_template_miner=template_miner)
+    

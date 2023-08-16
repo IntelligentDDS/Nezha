@@ -7,13 +7,16 @@ from pip import main
 from treelib import Tree, Node
 import pdb
 import time
+import tqdm
+
+import concurrent.futures
 
 log_path = dirname(__file__) + '/log/' + str(datetime.datetime.now().strftime(
     '%Y-%m-%d')) + '_nezha.log'
 logger = Logger(log_path, logging.DEBUG, __name__).getlog()
 
 
-def get_pattern(detete_time, ns, data_path, topk=30):
+def get_pattern(detete_time, ns, data_path, log_template_miner,topk=30):
     """
     func get_pattern: get pattern at the detete_time
     :parameter
@@ -40,7 +43,7 @@ def get_pattern(detete_time, ns, data_path, topk=30):
     # print(alarm_list)
     # alarm_list = {}
     event_graphs = data_integrate(
-        trace_file, trace_id_file, log_file, alarm_list)
+        trace_file, trace_id_file, log_file, alarm_list,ns,log_template_miner)
     # file_name = generate_tkg_input(event_graphs)
     # pattern_list = frequent_graph_miner(file_name, topk=topk)
     result_support_list = get_pattern_support(event_graphs)
@@ -92,9 +95,9 @@ def abnormal_pattern_ranker(normal_pattern_dict, abnormal_pattern_dict, min_scor
     return score_dict
 
 
-def pattern_ranker(normal_pattern_dict, normal_event_graphs, abnormal_time, ns, topk=10, min_score=0.67):
+def pattern_ranker(normal_pattern_dict, normal_event_graphs, abnormal_time, ns, log_template_miner,topk=10, min_score=0.67):
     rca_path = dirname(__file__) +  "/rca_data"
-    abnormal_pattern_dict, _, alarm_list = get_pattern(abnormal_time,  ns, rca_path)
+    abnormal_pattern_dict, _, alarm_list = get_pattern(abnormal_time, ns, rca_path,log_template_miner)
     abnormal_pattern_score = abnormal_pattern_ranker(
         normal_pattern_dict, abnormal_pattern_dict, min_score)
     score_dict = {}
@@ -120,14 +123,14 @@ def pattern_ranker(normal_pattern_dict, normal_event_graphs, abnormal_time, ns, 
     for item in move_list:
         score_dict.pop(item)
 
-    logger.info("Old Score List: %s" % score_dict)
+    # logger.info("Old Score List: %s" % score_dict)
 
     move_list = set()
     for key in score_dict.keys():
         # logger.info("%s %s %s %s" % (key, from_id_to_template(int(key.split("_")[0])), from_id_to_template(
         #     int(key.split("_")[1])), value))
         # only consider the root of child graph
-        if "Cpu" not in from_id_to_template(int(key.split("_")[1])) and "Network" not in from_id_to_template(int(key.split("_")[1])) and "Memory" not in from_id_to_template(int(key.split("_")[1])):
+        if "Cpu" not in from_id_to_template(int(key.split("_")[1]),log_template_miner) and "Network" not in from_id_to_template(int(key.split("_")[1]),log_template_miner) and "Memory" not in from_id_to_template(int(key.split("_")[1]),log_template_miner):
             for key1 in score_dict.keys():
                 if int(key.split("_")[0]) == int(key1.split("_")[1]) and score_dict[key] <= score_dict[key1]:
                     # logger.info("move key %s because it has root key %s" %
@@ -200,7 +203,7 @@ def pattern_ranker(normal_pattern_dict, normal_event_graphs, abnormal_time, ns, 
     return result_list, abnormal_pattern_score
 
 
-def evaluation(normal_time_list, fault_inject_list, ns):
+def evaluation(normal_time_list, fault_inject_list, ns,log_template_miner):
     """
     func evaluation: evaluate nezha's precision in inner-service level
     para:
@@ -219,7 +222,7 @@ def evaluation(normal_time_list, fault_inject_list, ns):
         normal_time = normal_time_list[i]
        
         normal_pattern_list, normal_event_graphs, normal_alarm_list = get_pattern(
-            normal_time, ns, construction_data_path)
+            normal_time, ns, construction_data_path,log_template_miner)
         f = open(ground_truth_path)
         fault_inject_data = json.load(f)
         f.close()
@@ -228,7 +231,7 @@ def evaluation(normal_time_list, fault_inject_list, ns):
 
         root_cause_list = json.load(
             open(root_cause_file))
-
+        
         for hour in fault_inject_data:
             for fault in fault_inject_data[hour]:
                 fault_number = fault_number + 1
@@ -250,12 +253,9 @@ def evaluation(normal_time_list, fault_inject_list, ns):
                 else:
                     abnormal_time = fault["inject_time"].split(
                         ":")[0] + ":" + str(min)
-                # logger.info("%s Inject Ground Truth: %s, %s, %s", fault["inject_time"],
-                #             fault["inject_pod"], fault["inject_type"], fault["root_cause"])
                 result_list, abnormal_pattern_score = pattern_ranker(
-                    normal_pattern_list, normal_event_graphs, abnormal_time, ns)
+                    normal_pattern_list, normal_event_graphs, abnormal_time, ns,log_template_miner)
 
-                # root_cause = fault["root_cause"].split("_")
                 logger.info("%s Inject RCA Result:", fault["inject_time"])
                 logger.info("%s Inject Ground Truth: %s, %s",
                             fault["inject_time"], fault["inject_pod"], fault["inject_type"])
@@ -286,7 +286,7 @@ def evaluation(normal_time_list, fault_inject_list, ns):
                 elif len(root_cause) == 2:
                     for i in range(len(result_list)):
                         if root_cause[0] in from_id_to_template(int(result_list[i]["events"].split(
-                                "_")[0])) and root_cause[1] in from_id_to_template(int(result_list[i]["events"].split("_")[1])) and str(fault["inject_pod"]) in str(result_list[i]["pod"]):
+                                "_")[0]),log_template_miner) and root_cause[1] in from_id_to_template(int(result_list[i]["events"].split("_")[1]),log_template_miner) and str(fault["inject_pod"]) in str(result_list[i]["pod"]):
                             top_list.append(topk)
                             logger.info("%s Inject Ground Truth: %s, %s score %s", fault["inject_time"],
                                         fault["inject_pod"], fault["inject_type"], topk)
@@ -303,22 +303,28 @@ def evaluation(normal_time_list, fault_inject_list, ns):
                                 topk = topk + 1
                 else:
                     logger.info("%s", root_cause)
+                
+                result_len = len(result_list)
+                if result_len > 10:
+                    result_len = 10
 
-                for i in range(len(result_list)):
+                for i in range(result_len):
                     if "resource" in result_list[i].keys():
                         logger.info("source :%s, target: %s, score: %s, deepth: %s, pod %s, resource alert %s" % (
-                            from_id_to_template(int(result_list[i]["events"].split("_")[0])), from_id_to_template(int(result_list[i]["events"].split("_")[1])), result_list[i]["score"], result_list[i]["deepth"], result_list[i]["pod"], result_list[i]["resource"]))
+                            from_id_to_template(int(result_list[i]["events"].split("_")[0]),log_template_miner), from_id_to_template(int(result_list[i]["events"].split("_")[1]),log_template_miner), result_list[i]["score"], result_list[i]["deepth"], result_list[i]["pod"], result_list[i]["resource"]))
                     else:
                         logger.info("source :%s, target: %s, score: %s, deepth: %s, pod %s" % (from_id_to_template(int(result_list[i]["events"].split("_")[
-                                    0])), from_id_to_template(int(result_list[i]["events"].split("_")[1])), result_list[i]["score"], result_list[i]["deepth"], result_list[i]["pod"]))
+                                    0]), log_template_miner), from_id_to_template(int(result_list[i]["events"].split("_")[1]), log_template_miner), result_list[i]["score"], result_list[i]["deepth"], result_list[i]["pod"]))
 
                         for item in abnormal_pattern_score:
                             if result_list[i]["events"].split("_")[0] == item.split("_")[0]:
                                 logger.info("actual pattern source :%s, target: %s" % (from_id_to_template(int(item.split("_")[
-                                            0])), from_id_to_template(int(item.split("_")[1]))))
+                                            0]),log_template_miner), from_id_to_template(int(item.split("_")[1]),log_template_miner)))
                                 break
 
                 logger.info("")
+
+
     logger.info("%s", top_list)
     top5 = 0
     top1 = 0
@@ -344,7 +350,7 @@ def evaluation(normal_time_list, fault_inject_list, ns):
     logger.info("%f" % (all_num/fault_number))
 
 
-def evaluation_min_score(normal_time_list, fault_inject_list, ns):
+def evaluation_min_score(normal_time_list, fault_inject_list, ns,log_template_miner):
     """
     func evaluation: evaluate nezha's precision in inner-service level when assign different  min_score
     para:
@@ -365,7 +371,7 @@ def evaluation_min_score(normal_time_list, fault_inject_list, ns):
             normal_time = normal_time_list[i]
 
             normal_pattern_list, normal_event_graphs, normal_alarm_list = get_pattern(
-                normal_time, ns, construction_data_path)
+                normal_time, ns, construction_data_path,log_template_miner)
             f = open(ground_truth_path)
             fault_inject_data = json.load(f)
             f.close()
@@ -399,7 +405,7 @@ def evaluation_min_score(normal_time_list, fault_inject_list, ns):
                     # logger.info("%s Inject Ground Truth: %s, %s, %s", fault["inject_time"],
                     #             fault["inject_pod"], fault["inject_type"], fault["root_cause"])
                     result_list, abnormal_pattern_score = pattern_ranker(
-                        normal_pattern_list, normal_event_graphs, abnormal_time, min_score=min_score, ns=ns)
+                        normal_pattern_list, normal_event_graphs, abnormal_time, min_score=min_score, ns=ns, log_template_miner=log_template_miner)
 
                     # root_cause = fault["root_cause"].split("_")
                     logger.info("%s Inject RCA Result:", fault["inject_time"])
@@ -430,7 +436,7 @@ def evaluation_min_score(normal_time_list, fault_inject_list, ns):
                     elif len(root_cause) == 2:
                         for i in range(len(result_list)):
                             if root_cause[0] in from_id_to_template(int(result_list[i]["events"].split(
-                                    "_")[0])) and root_cause[1] in from_id_to_template(int(result_list[i]["events"].split("_")[1])) and str(fault["inject_pod"]) in str(result_list[i]["pod"]):
+                                    "_")[0]), log_template_miner) and root_cause[1] in from_id_to_template(int(result_list[i]["events"].split("_")[1]), log_template_miner) and str(fault["inject_pod"]) in str(result_list[i]["pod"]):
                                 top_list.append(topk)
                                 logger.info("%s Inject Ground Truth: %s, %s score %s", fault["inject_time"],
                                             fault["inject_pod"], fault["inject_type"], topk)
@@ -451,10 +457,10 @@ def evaluation_min_score(normal_time_list, fault_inject_list, ns):
                     for i in range(len(result_list)):
                         if "resource" in result_list[i].keys():
                             logger.info("source :%s, target: %s, score: %s, deepth: %s, pod %s, resource %s" % (
-                                from_id_to_template(int(result_list[i]["events"].split("_")[0])), from_id_to_template(int(result_list[i]["events"].split("_")[1])), result_list[i]["score"], result_list[i]["deepth"], result_list[i]["pod"], result_list[i]["resource"]))
+                                from_id_to_template(int(result_list[i]["events"].split("_")[0]),log_template_miner), from_id_to_template(int(result_list[i]["events"].split("_")[1]),log_template_miner), result_list[i]["score"], result_list[i]["deepth"], result_list[i]["pod"], result_list[i]["resource"]))
                         else:
                             logger.info("source :%s, target: %s, score: %s, deepth: %s, pod %s" % (from_id_to_template(int(result_list[i]["events"].split("_")[
-                                        0])), from_id_to_template(int(result_list[i]["events"].split("_")[1])), result_list[i]["score"], result_list[i]["deepth"], result_list[i]["pod"]))
+                                        0]),log_template_miner), from_id_to_template(int(result_list[i]["events"].split("_")[1]),log_template_miner), result_list[i]["score"], result_list[i]["deepth"], result_list[i]["pod"]))
 
                     logger.info("")
         logger.info("%s", top_list)
@@ -483,7 +489,7 @@ def evaluation_min_score(normal_time_list, fault_inject_list, ns):
         logger.info("%f" % (all_num/fault_number))
 
 
-def evaluation_pod(normal_time_list, fault_inject_list, ns):
+def evaluation_pod(normal_time_list, fault_inject_list, ns,log_template_miner):
     """
     func evaluation: evaluate nezha's precision in pod-service level
     para:
@@ -502,7 +508,7 @@ def evaluation_pod(normal_time_list, fault_inject_list, ns):
         normal_time = normal_time_list[i]
 
         normal_pattern_list, normal_event_graphs, normal_alarm_list = get_pattern(
-            normal_time, ns, construction_data_path)
+            normal_time, ns, construction_data_path,log_template_miner)
         f = open(ground_truth_path)
         fault_inject_data = json.load(f)
         f.close()
@@ -536,7 +542,7 @@ def evaluation_pod(normal_time_list, fault_inject_list, ns):
                 # logger.info("%s Inject Ground Truth: %s, %s, %s", fault["inject_time"],
                 #             fault["inject_pod"], fault["inject_type"], fault["root_cause"])
                 result_list, abnormal_pattern_score = pattern_ranker(
-                    normal_pattern_list, normal_event_graphs, abnormal_time, ns)
+                    normal_pattern_list, normal_event_graphs, abnormal_time, ns, log_template_miner)
 
                 # root_cause = fault["root_cause"].split("_")
                 logger.info("%s Inject RCA Pod Result:", fault["inject_time"])
@@ -567,7 +573,7 @@ def evaluation_pod(normal_time_list, fault_inject_list, ns):
                 elif len(root_cause) == 2:
                     for i in range(len(result_list)):
                         if root_cause[0] in from_id_to_template(int(result_list[i]["events"].split(
-                                "_")[0])) and root_cause[1] in from_id_to_template(int(result_list[i]["events"].split("_")[1])) and str(fault["inject_pod"]) in str(result_list[i]["pod"]):
+                                "_")[0]), log_template_miner) and root_cause[1] in from_id_to_template(int(result_list[i]["events"].split("_")[1]),log_template_miner) and str(fault["inject_pod"]) in str(result_list[i]["pod"]):
                             top_list.append(topk)
                             logger.info("%s Inject Ground Truth: %s, %s score %s", fault["inject_time"],
                                         fault["inject_pod"], fault["inject_type"], topk)
@@ -588,10 +594,10 @@ def evaluation_pod(normal_time_list, fault_inject_list, ns):
                 for i in range(len(result_list)):
                     if "resource" in result_list[i].keys():
                         logger.info("source :%s, target: %s, score: %s, deepth: %s, pod %s, resource %s" % (
-                            from_id_to_template(int(result_list[i]["events"].split("_")[0])), from_id_to_template(int(result_list[i]["events"].split("_")[1])), result_list[i]["score"], result_list[i]["deepth"], result_list[i]["pod"], result_list[i]["resource"]))
+                            from_id_to_template(int(result_list[i]["events"].split("_")[0]), log_template_miner), from_id_to_template(int(result_list[i]["events"].split("_")[1]),log_template_miner), result_list[i]["score"], result_list[i]["deepth"], result_list[i]["pod"], result_list[i]["resource"]))
                     else:
                         logger.info("source :%s, target: %s, score: %s, deepth: %s, pod %s" % (from_id_to_template(int(result_list[i]["events"].split("_")[
-                                    0])), from_id_to_template(int(result_list[i]["events"].split("_")[1])), result_list[i]["score"], result_list[i]["deepth"], result_list[i]["pod"]))
+                                    0]),log_template_miner), from_id_to_template(int(result_list[i]["events"].split("_")[1]),log_template_miner), result_list[i]["score"], result_list[i]["deepth"], result_list[i]["pod"]))
 
                 logger.info("")
     logger.info("%s", top_list)
@@ -640,6 +646,12 @@ if __name__ == '__main__':
     path2 = "/root/jupyter/nezha/construction_data/2022-08-23/2022-08-23-fault_list.json"
 
     ns = "hipster"
+    config.load(dirname(__file__) + "/log_template/drain3_" + ns + ".ini")
+    config.profiling_enabled = False
+
+    path = dirname(__file__) + '/log_template/' + ns + ".bin"
+    persistence = FilePersistence(path)
+    template_miner = TemplateMiner(persistence, config=config)
 
     # inject_list = [path1, path2]
     # normal_time_list = [normal_time1, normal_time2]
@@ -658,7 +670,7 @@ if __name__ == '__main__':
 
     inject_list = [path2]
     normal_time_list = [normal_time2]
-    evaluation(normal_time_list, inject_list, ns)
+    evaluation(normal_time_list, inject_list, ns,template_miner)
     # evaluation_pod(normal_time_list, inject_list, ns)
     # evaluation_min_score(normal_time_list, inject_list, ns)
 

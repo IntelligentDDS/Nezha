@@ -18,18 +18,18 @@ This repository is the basic implementation of our publication in `FSE'23` confe
 
 ### Dataset 
 
-[`2022-08-22`](./rca_data/2022-08-22/) and [`2022-08-23`](./rca_data/2022-08-23/) is the fault-suffering dataset of OnlineBoutique
+[2022-08-22](./rca_data/2022-08-22/) and [2022-08-23](./rca_data/2022-08-23/) is the fault-suffering dataset of OnlineBoutique
 
 
-[`2023-01-29`](./rca_data/2023-01-29/) and [`2023-01-30`](./rca_data/2023-01-30/) is the fault-suffering dataset of Trainticket
+[2023-01-29](./rca_data/2023-01-29/) and [2023-01-30](./rca_data/2023-01-30/) is the fault-suffering dataset of Trainticket
 
 #### Fault-free data
 
-[`construct_data`](./construct_data/)  is the data of fault-free phase 
+[construct_data](./construct_data/)  is the data of fault-free phase 
 
-[`root_cause_hipster.json`](./construct_data/root_cause_hipster.json) is the inner-servie level label of root causes in OnlineBoutique
+[root_cause_hipster.json](./construct_data/root_cause_hipster.json) is the inner-servie level label of root causes in OnlineBoutique
 
-[`root_cause_ts.json`](./construct_data/root_cause_ts.json) is the inner-servie level label of root causes in Trainticket
+[root_cause_ts.json](./construct_data/root_cause_ts.json) is the inner-servie level label of root causes in Trainticket
 
 As an example,
 
@@ -48,28 +48,37 @@ The label of `checkoutservice` means that the label `return` fault of `checkouts
 
 #### Fault-suffering Data
 
-[`rca_data`](./rca_data/) is the data of fault-suffering phase
+[rca_data](./rca_data/) is the data of fault-suffering phase
 
-[`2022-08-22-fault_list`](./rca_data/2022-08-22-fault_list) and [`2022-08-23-fault_list`](./rca_data/2022-08-23-fault_list) is the servie level label of root causes in OnlineBoutique
+[2022-08-22-fault_list](./rca_data/2022-08-22-fault_list) and [2022-08-23-fault_list](./rca_data/2022-08-23-fault_list) is the servie level label of root causes in OnlineBoutique
 
-[`2023-01-29-fault_list`](./rca_data/2022-01-29-fault_list) and [`2022-01-30-fault_list`](./rca_data/2022-01-30-fault_list) is the servie level label of root causes in TrainTicket
+[2023-01-29-fault_list](./rca_data/2022-01-29-fault_list) and [2022-01-30-fault_list](./rca_data/2022-01-30-fault_list) is the servie level label of root causes in TrainTicket
 
-### Running   
+### Running  Nezha
 
-#### Log Parsing
+#### OnlineBoutique at service level
 
-`Nezha` applies `Drain3` for log parsing. 
-
-Considering the cold start of `Drain3`, we recommend parsing some existing log data before RCA. 
 
 ```
-python3 log_parsing.py
+python3.6 ./main.py --ns hipster --level service 
 ```
 
-#### Running Nezha
+#### OnlineBoutique at inner service level
 
 ```
-python3 main.py 
+python3.6 ./main.py --ns hipster --level inner
+```
+
+#### Trainticket at service level
+
+```
+python3.6 ./main.py --ns ts --level service
+```
+
+#### Trainticket at inner service level
+
+```
+python3.6 ./main.py --ns ts --level inner
 ```
 
 The service level results and inner-service level results will be printed and recorded in `./log`
