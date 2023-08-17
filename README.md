@@ -14,7 +14,7 @@ This repository is the basic implementation of our publication in `FSE'23` confe
 - Git is also needed.
 
 ### Setup
-`python3 -m pip install -r requirements.txt` to install the dependency for Nezha
+`python3.6 -m pip install -r requirements.txt` to install the dependency for Nezha
 
 
 ### Running  Nezha
