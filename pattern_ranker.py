@@ -229,8 +229,9 @@ def evaluation(normal_time_list, fault_inject_list, ns,log_template_miner):
 
         root_cause_file = construction_data_path + "/root_cause_" + ns + ".json"
 
-        root_cause_list = json.load(
-            open(root_cause_file))
+        root_cause_lit_file = open(root_cause_file)
+        root_cause_list = json.load(root_cause_lit_file)
+        root_cause_lit_file.close()
         
         for hour in fault_inject_data:
             for fault in fault_inject_data[hour]:
@@ -340,14 +341,14 @@ def evaluation(normal_time_list, fault_inject_list, ns,log_template_miner):
         all_num += num
 
     logger.info('-------- %s Fault numbuer : %s-------', ns,fault_number)
-    logger.info('--------R@1 Result-------')
+    logger.info('--------AIS@1 Result-------')
     logger.info("%f %%" % (top1/fault_number * 100))
-    logger.info('--------R@3 Result-------')
+    logger.info('--------AIS@3 Result-------')
     logger.info("%f %%" % (top3/fault_number * 100))
-    logger.info('--------R@5 Result-------')
+    logger.info('--------AIS@5 Result-------')
     logger.info("%f %%" % (top5/fault_number * 100))
-    logger.info('--------MAR Result-------')
-    logger.info("%f" % (all_num/fault_number))
+    # logger.info('--------MAR Result-------')
+    # logger.info("%f" % (all_num/fault_number))
 
 
 def evaluation_min_score(normal_time_list, fault_inject_list, ns,log_template_miner):
@@ -378,8 +379,9 @@ def evaluation_min_score(normal_time_list, fault_inject_list, ns,log_template_mi
 
             root_cause_file = construction_data_path + "/root_cause_" + ns + ".json"
 
-            root_cause_list = json.load(
-                open(root_cause_file))
+            root_cause_lit_file = open(root_cause_file)
+            root_cause_list = json.load()
+            root_cause_lit_file.close()
 
             for hour in fault_inject_data:
                 for fault in fault_inject_data[hour]:
@@ -514,9 +516,10 @@ def evaluation_pod(normal_time_list, fault_inject_list, ns,log_template_miner):
         f.close()
 
         root_cause_file = construction_data_path + "/root_cause_" + ns + ".json"
-
-        root_cause_list = json.load(
-            open(root_cause_file))
+        
+        root_cause_lit_file = open(root_cause_file)
+        root_cause_list = json.load(root_cause_lit_file)
+        root_cause_lit_file.close()
 
         for hour in fault_inject_data:
             for fault in fault_inject_data[hour]:
@@ -591,14 +594,17 @@ def evaluation_pod(normal_time_list, fault_inject_list, ns,log_template_miner):
                 else:
                     logger.info("%s", root_cause)
 
-                for i in range(len(result_list)):
+                result_len = len(result_list)
+                if result_len > 10:
+                    result_len = 10
+
+                for i in range(result_len):
                     if "resource" in result_list[i].keys():
                         logger.info("source :%s, target: %s, score: %s, deepth: %s, pod %s, resource %s" % (
                             from_id_to_template(int(result_list[i]["events"].split("_")[0]), log_template_miner), from_id_to_template(int(result_list[i]["events"].split("_")[1]),log_template_miner), result_list[i]["score"], result_list[i]["deepth"], result_list[i]["pod"], result_list[i]["resource"]))
                     else:
                         logger.info("source :%s, target: %s, score: %s, deepth: %s, pod %s" % (from_id_to_template(int(result_list[i]["events"].split("_")[
                                     0]),log_template_miner), from_id_to_template(int(result_list[i]["events"].split("_")[1]),log_template_miner), result_list[i]["score"], result_list[i]["deepth"], result_list[i]["pod"]))
-
                 logger.info("")
     logger.info("%s", top_list)
     top5 = 0
@@ -614,14 +620,14 @@ def evaluation_pod(normal_time_list, fault_inject_list, ns,log_template_miner):
             top1 += 1
         all_num += num
     logger.info('-------- %s Fault numbuer : %s-------', ns,fault_number)
-    logger.info('--------R@1 Result-------')
+    logger.info('--------AS@1 Result-------')
     logger.info("%f %%" % (top1/fault_number * 100))
-    logger.info('--------R@3 Result-------')
+    logger.info('--------AS@3 Result-------')
     logger.info("%f %%" % (top3/fault_number * 100))
-    logger.info('--------R@5 Result-------')
+    logger.info('--------AS@5 Result-------')
     logger.info("%f %%" % (top5/fault_number * 100))
-    logger.info('--------MAR Result-------')
-    logger.info("%f" % (all_num/fault_number))
+    # logger.info('--------MAR Result-------')
+    # logger.info("%f" % (all_num/fault_number))
 
 
 def evaluation_time(ns="hipster"):
@@ -646,6 +652,9 @@ if __name__ == '__main__':
     path2 = "/root/jupyter/nezha/construction_data/2022-08-23/2022-08-23-fault_list.json"
 
     ns = "hipster"
+    template_indir = dirname(__file__) + '/log_template'
+    config = TemplateMinerConfig()
+
     config.load(dirname(__file__) + "/log_template/drain3_" + ns + ".ini")
     config.profiling_enabled = False
 

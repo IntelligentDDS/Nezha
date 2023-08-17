@@ -337,7 +337,7 @@ def get_events_within_trace(trace_reader, log_reader, trace_id, alarm_list, ns,l
             trace.sort_spans()
     except Exception as e:
         pass
-        logger.error("Catch an exception: %s", e)
+        # logger.error("Catch an exception: %s", e)
 
     return trace
 
@@ -490,7 +490,7 @@ def data_integrate(trace_file, trace_id_file, log_file, alarm_list, ns,log_templ
     traces = []
     # print(datetime.datetime.now())
     event_graphs = []
-    pool = Pool(200)
+    # pool = Pool(200)
 
     # traces = [pool.apply_async(get_logs_within_trace_map, args=(
     #     trace_reader, log_reader, trace_id_reader[0][i],)) for i in range(len(trace_id_reader[0]))]
@@ -538,15 +538,16 @@ def data_integrate(trace_file, trace_id_file, log_file, alarm_list, ns,log_templ
         graph.get_support()
         # graph.get_deepth(107)
 
-    del trace_id_reader
-    del trace_reader
-    del log_reader
+    # del trace_id_reader
+    # del trace_reader
+    # del log_reader
 
     # pool.close()
     # pool.join()
 
     # events[0][0].show_event()
     # print(datetime.datetime.now())
+    logger.info("Data Integrate Complete!")
     return event_graphs
 
 

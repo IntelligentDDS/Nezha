@@ -20,9 +20,6 @@ log_path = dirname(__file__) + '/log/' + str(datetime.datetime.now().strftime(
     '%Y-%m-%d')) + '_nezha.log'
 logger = Logger(log_path, logging.DEBUG, __name__).getlog()
 
-template_indir = dirname(__file__) + '/log_template'
-config = TemplateMinerConfig()
-
 
 
 

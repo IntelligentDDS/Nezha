@@ -7,6 +7,8 @@ logger = Logger(log_path, logging.DEBUG, __name__).getlog()
 
 
 def get_miner(ns):
+    template_indir = dirname(__file__) + '/log_template'
+    config = TemplateMinerConfig()
     config.load(dirname(__file__) + "/log_template/drain3_" + ns + ".ini")
     config.profiling_enabled = False
 
@@ -38,7 +40,6 @@ if __name__ == '__main__':
         normal_time_list = [normal_time1, normal_time2]
         if level=="service":
             logger.info("------- OnlineBoutique Result at service level -------")
-
             evaluation_pod(normal_time_list, inject_list, ns,log_template_miner)
         else:
             logger.info("------- OnlineBoutique Result at inner service level -------")
