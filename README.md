@@ -14,6 +14,11 @@ This repository is the basic implementation of our publication in `FSE'23` confe
 - Git is also needed.
 
 ### Setup
+
+Download `Nezha` first via `git clone git@github.com:IntelligentDDS/Nezha.git`
+
+Enter `Nezha` content by `cd Nezha` 
+
 `python3.6 -m pip install -r requirements.txt` to install the dependency for Nezha
 
 
