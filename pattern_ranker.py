@@ -1,15 +1,9 @@
 import datetime
-from nturl2path import pathname2url
-from re import T, template
 from data_integrate import *
 from pattern_miner import *
-from pip import main
-from treelib import Tree, Node
 import pdb
 import time
 import tqdm
-
-import concurrent.futures
 
 log_path = dirname(__file__) + '/log/' + str(datetime.datetime.now().strftime(
     '%Y-%m-%d')) + '_nezha.log'
@@ -649,7 +643,7 @@ if __name__ == '__main__':
     path1 = "/root/jupyter/nezha/construction_data/2022-08-22/2022-08-22-fault_list.json"
 
     normal_time2 = "2022-08-23 17:00"
-    path2 = "/root/jupyter/nezha/construction_data/2022-08-23/2022-08-23-fault_list.json"
+    path2 = "./construction_data/2022-08-23/2022-08-23-fault_list.json"
 
     ns = "hipster"
     template_indir = dirname(__file__) + '/log_template'
