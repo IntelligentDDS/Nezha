@@ -1,6 +1,6 @@
 # Nezha
 
-This repository is the basic implementation of our publication in `FSE'23` conference paper `Nezha: Interpretable Fine-Grained Root Causes Analysis for Microservices on Multi-Modal Observability Data`
+This repository is the basic implementation of our publication in `FSE'23` conference paper [Nezha: Interpretable Fine-Grained Root Causes Analysis for Microservices on Multi-Modal Observability Data](./FSE2023_Nezha.pdf)
 
 ## Description
 
