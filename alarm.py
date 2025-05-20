@@ -104,7 +104,7 @@ def get_netwrok_metric(trace_file, pod_name):
 
     try:
         pod_spans = pod_reader.loc[[pod_name], [
-            'SpanID', 'ParentID', 'PodName', 'EndTimeUnixNano']]
+            'SpanID', 'ParentID', 'EndTimeUnixNano']]
     except:
         service = pod_name.rsplit('-', 1)[0]
         service = service.rsplit('-', 1)[0]
